@@ -1,0 +1,23 @@
+var S2 = ee.ImageCollection ('COPERNICUS/S2') 
+  .filterDate('2019-06-01', '2019-08-31')
+  .filterBounds(geo)
+  .filterMetadata("CLOUDY_PIXEL_PERCENTAGE", "less_than", 20);
+
+var Mediana = S2.median();
+
+var RecorteS2 = Mediana.clip(geo);
+
+Map.addLayer(RecorteS2, {
+   bands:['B11','B8','B4'],
+  min:581.8,
+  max:4604.2,
+  gamma:0.92
+},'RGB', true);
+  
+
+Export.image.toDrive({
+  image:RecorteS2.select(['B11','B8','B4']),
+  scale:10,
+  maxPixels:1e13,
+  description:'s2_2019'});
+
